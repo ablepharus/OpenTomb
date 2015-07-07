@@ -12,6 +12,7 @@
 #include <SDL2/SDL_opengl.h>
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_haptic.h>
+#include <vector>
 
 extern "C" {
 #include "lua/lua.h"
@@ -435,9 +436,9 @@ void Engine_InitSDLVideo()
 
     Con_AddLine((const char*)glGetString(GL_VENDOR), FONTSTYLE_CONSOLE_INFO);
     Con_AddLine((const char*)glGetString(GL_RENDERER), FONTSTYLE_CONSOLE_INFO);
-    char buf[con_base.line_size];
-    Sys_snprintf(buf, con_base.line_size, "OpenGL version %s", glGetString(GL_VERSION));
-    Con_AddLine((const char*)buf, FONTSTYLE_CONSOLE_INFO);
+    std::vector<char> buf((size_t)con_base.line_size);
+    Sys_snprintf(buf.data(), con_base.line_size, "OpenGL version %s", glGetString(GL_VERSION));
+    Con_AddLine((const char*)buf.data(), FONTSTYLE_CONSOLE_INFO);
     Con_AddLine((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION), FONTSTYLE_CONSOLE_INFO);
 }
 

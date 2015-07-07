@@ -1,6 +1,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_audio.h>
+#include <vector>
 
 extern "C" {
 #include "al/AL/al.h"
@@ -727,14 +728,15 @@ bool StreamTrack::Stream(ALuint buffer)             // Update stream process.
 
 bool StreamTrack::Stream_Ogg(ALuint buffer)
 {
-    char pcm[audio_settings.stream_buffer_size];
+    std::vector<char> pcm(audio_settings.stream_buffer_size);
+    
     int  size = 0;
     int  section;
     int  result;
 
     while(size < audio_settings.stream_buffer_size)
     {
-        result = ov_read(&vorbis_Stream, pcm + size, audio_settings.stream_buffer_size - size, 0, 2, 1, &section);
+        result = ov_read(&vorbis_Stream, pcm.data() + size, audio_settings.stream_buffer_size - size, 0, 2, 1, &section);
 
         if(result > 0)
         {
@@ -763,7 +765,7 @@ bool StreamTrack::Stream_Ogg(ALuint buffer)
     if(size == 0)
         return false;
 
-    alBufferData(buffer, format, pcm, size, rate);
+    alBufferData(buffer, format, pcm.data(), size, rate);
     return true;
 }
 

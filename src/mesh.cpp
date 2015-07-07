@@ -12,6 +12,7 @@
 #include "resource.h"
 #include "bullet/btBulletCollisionCommon.h"
 #include "bullet/btBulletDynamicsCommon.h"
+#include <vector>
 
 
 vertex_p FindVertexInMesh(base_mesh_p mesh, btScalar v[3]);
@@ -269,7 +270,7 @@ void SSBoneFrame_CreateFromModel(ss_bone_frame_p bf, skeletal_model_p model)
     bf->bone_tags = (ss_bone_tag_p)malloc(bf->bone_tag_count * sizeof(ss_bone_tag_t));
 
     int stack = 0;
-    ss_bone_tag_p parents[bf->bone_tag_count];
+    std::vector<ss_bone_tag_p> parents(bf->bone_tag_count);
     parents[0] = NULL;
     bf->bone_tags[0].parent = NULL;                                             // root
     for(uint16_t i=0;i<bf->bone_tag_count;i++)

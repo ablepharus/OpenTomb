@@ -13,6 +13,7 @@
 #include "bullet/btBulletCollisionCommon.h"
 #include "bullet/btBulletDynamicsCommon.h"
 #include "bullet/BulletCollision/CollisionDispatch/btGhostObject.h"
+#include <vector>
 
 extern "C" {
 #include "lua/lua.h"
@@ -4051,8 +4052,9 @@ int Engine_LoadMap(const char *name)
 
 int Engine_ExecCmd(char *ch)
 {
-    char token[con_base.line_size];
-    char buf[con_base.line_size + 32];
+    std::vector<char> token_vector(con_base.line_size);
+    char *token = token_vector.data();
+    std::vector<char> buf(con_base.line_size + 32);
     char *pch;
     int val;
     room_p r;
@@ -4277,8 +4279,8 @@ int Engine_ExecCmd(char *ch)
             }
             else
             {
-                snprintf(buf, con_base.line_size + 32, "Command \"%s\" not found", token);
-                Con_AddLine(buf, FONTSTYLE_CONSOLE_WARNING);
+                Sys_snprintf(buf.data(), con_base.line_size + 32, "Command \"%s\" not found", token);
+                Con_AddLine(buf.data(), FONTSTYLE_CONSOLE_WARNING);
             }
             return 0;
         }
