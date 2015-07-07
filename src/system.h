@@ -37,6 +37,8 @@ void Sys_Error(const char *error, ...);
 void Sys_Warn(const char *warning, ...);
 void Sys_DebugLog(const char *file, const char *fmt, ...);
 
+int Sys_snprintf(char *dest, size_t count, const char* format, ...);
+
 #define Sys_LogCurrPlace Sys_DebugLog(LOG_FILENAME, "\"%s\" str = %d\n", __FILE__, __LINE__);
 #define Sys_extError(...) {Sys_LogCurrPlace Sys_Error(__VA_ARGS__);}
 #define Sys_extWarn(...) {Sys_LogCurrPlace Sys_Warn(__VA_ARGS__);}

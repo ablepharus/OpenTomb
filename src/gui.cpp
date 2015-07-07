@@ -1283,7 +1283,7 @@ void gui_InventoryManager::render()
                     {
                         char counter[32];
                         lua_GetString(engine_lua, STR_GEN_MASK_INVHEADER, 32, counter);
-                        snprintf(mLabel_ItemName_text, GUI_LINE_DEFAULTSIZE, (const char*)counter, bi->name, i->count);
+                        Sys_snprintf(mLabel_ItemName_text, GUI_LINE_DEFAULTSIZE, (const char*)counter, bi->name, i->count);
 
                     }
                 }

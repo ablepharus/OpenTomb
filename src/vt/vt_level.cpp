@@ -4,6 +4,7 @@
 #include "vt_level.h"
 
 #define RCSID "$Id: vt_level.cpp,v 1.1 2002/09/20 15:59:02 crow Exp $"
+#include "../engine.h"
 
 void VT_Level::prepare_level()
 {
@@ -181,7 +182,7 @@ void VT_Level::dump_textures()
 
     for (i = 0; i < num_textiles; i++) 
     {
-        snprintf(buffer, 1024, "dump/%03i_32.tga", i);
+        Sys_snprintf(buffer, 1024, "dump/%03i_32.tga", i);
         WriteTGAfile(buffer, (uint8_t *)&textile32[i].pixels, 256, 256, 0);
     }
 }

@@ -141,7 +141,7 @@ int Game_Load(const char* name)
     if(local)
     {
         char token[512];
-        snprintf(token, 512, "save/%s", name);
+        Sys_snprintf(token, 512, "save/%s", name);
         f = fopen(token, "rb");
         if(f == NULL)
         {
@@ -269,7 +269,7 @@ int Game_Save(const char* name)
 
     if(local)
     {
-        snprintf(token, 512, "save/%s", name);
+        Sys_snprintf(token, 512, "save/%s", name);
         f = fopen(token, "wb");
     }
     else

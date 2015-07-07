@@ -716,12 +716,12 @@ bool lua_CallWithError(lua_State *lua, int nargs, int nresults, int errfunc, con
         if (lua_gettop(lua) > 0 && lua_isstring(lua, -1))
         {
             const char *luaErrorDescription = lua_tostring(lua, -1);
-            snprintf(errormessage, sizeof(errormessage), "Lua error: %s (called from %s:%d)", luaErrorDescription, cfile, cline);
+            Sys_snprintf(errormessage, sizeof(errormessage), "Lua error: %s (called from %s:%d)", luaErrorDescription, cfile, cline);
             lua_pop(lua, 1);
         }
         else
         {
-            snprintf(errormessage, sizeof(errormessage), "Lua error without message (called from %s:%d)", cfile, cline);
+            Sys_snprintf(errormessage, sizeof(errormessage), "Lua error without message (called from %s:%d)", cfile, cline);
         }
         //fprintf(stderr, "%s\n", errormessage);
         Con_AddLine(errormessage, FONTSTYLE_CONSOLE_WARNING);

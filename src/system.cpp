@@ -118,6 +118,21 @@ void Sys_DebugLog(const char *file, const char *fmt, ...)
     fwrite(data, strlen(data), 1, stderr);
 }
 
+int Sys_snprintf(char* dest, size_t size, const char* format,va_list ap)
+{
+#if defined(_MSC_VER) && _MSC_VER < 1900
+    //int size = -1;
+
+    if (size != 0)
+        size = _vsnprintf_s(dest, size, _TRUNCATE, format, ap);
+    if (size == -1)
+        size = _vscprintf(format, ap);
+
+    return size;
+#else
+#endif
+}
+
 /*
 ===============================================================================
 

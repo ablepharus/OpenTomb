@@ -436,7 +436,7 @@ void Engine_InitSDLVideo()
     Con_AddLine((const char*)glGetString(GL_VENDOR), FONTSTYLE_CONSOLE_INFO);
     Con_AddLine((const char*)glGetString(GL_RENDERER), FONTSTYLE_CONSOLE_INFO);
     char buf[con_base.line_size];
-    snprintf(buf, con_base.line_size, "OpenGL version %s", glGetString(GL_VERSION));
+    Sys_snprintf(buf, con_base.line_size, "OpenGL version %s", glGetString(GL_VERSION));
     Con_AddLine((const char*)buf, FONTSTYLE_CONSOLE_INFO);
     Con_AddLine((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION), FONTSTYLE_CONSOLE_INFO);
 }
@@ -765,7 +765,7 @@ void Engine_Frame(btScalar time)
     else
     {
         screen_info.fps = (20.0 / time_cycl);
-        snprintf(system_fps.text, system_fps.text_size, "%.1f", screen_info.fps);
+        Sys_snprintf(system_fps.text, system_fps.text_size, "%.1f", screen_info.fps);
         //Gui_StringAutoRect(&system_fps);
         cycles = 0;
         time_cycl = 0.0;

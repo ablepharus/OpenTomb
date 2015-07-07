@@ -113,12 +113,12 @@ bool CreateEntityFunc(lua_State *lua, const char* func_name, int entity_id)
         char buf[64] = {0};
         int top = lua_gettop(lua);
         assert(top >= 0);
-        snprintf(buf, 64, func_template, func_name);
+        Sys_snprintf(buf, 64, func_template, func_name);
         lua_getglobal(lua, buf);
 
         if(lua_isfunction(lua, -1))
         {
-            snprintf(buf, 64, "if(entity_funcs[%d]==nil) then entity_funcs[%d]={} end", entity_id, entity_id);
+            Sys_snprintf(buf, 64, "if(entity_funcs[%d]==nil) then entity_funcs[%d]={} end", entity_id, entity_id);
             luaL_loadstring(lua, buf);
             if (lua_CallAndLog(lua, 0, LUA_MULTRET, 0))
             {
@@ -822,7 +822,7 @@ int TR_Sector_TranslateFloorData(room_sector_p sector, class VT_Level *tr)
 
                     // Table cell header.
 
-                    snprintf(buf, 256, "trigger_list[%d] = {activator_type = %d, func = function(entity_index) \n",
+                    Sys_snprintf(buf, 256, "trigger_list[%d] = {activator_type = %d, func = function(entity_index) \n",
                                          sector->trig_index, activator_type);
 
                     strcat(script, buf);
@@ -838,7 +838,7 @@ int TR_Sector_TranslateFloorData(room_sector_p sector, class VT_Level *tr)
                         case TR_FD_TRIGTYPE_PAD:
                         case TR_FD_TRIGTYPE_ANTIPAD:
                             // Check move type for triggering entity.
-                            snprintf(buf, 128, " if(getEntityMoveType(entity_index) == %d) then \n", MOVE_ON_FLOOR);
+                            Sys_snprintf(buf, 128, " if(getEntityMoveType(entity_index) == %d) then \n", MOVE_ON_FLOOR);
                             if(sub_function == TR_FD_TRIGTYPE_ANTIPAD) action_type = TR_ACTIONTYPE_ANTI;
                             condition = 1;  // Set additional condition.
                             break;
@@ -868,7 +868,7 @@ int TR_Sector_TranslateFloorData(room_sector_p sector, class VT_Level *tr)
 
                         case TR_FD_TRIGTYPE_COMBAT:
                             // Check weapon status for triggering entity.
-                            snprintf(buf, 128, " if(getCharacterCombatMode(entity_index) > 0) then \n");
+                            Sys_snprintf(buf, 128, " if(getCharacterCombatMode(entity_index) > 0) then \n");
                             condition = 1;  // Set additional condition.
                             break;
 
@@ -886,18 +886,18 @@ int TR_Sector_TranslateFloorData(room_sector_p sector, class VT_Level *tr)
                         case TR_FD_TRIGTYPE_MONKEY:
                         case TR_FD_TRIGTYPE_CLIMB:
                             // Check move type for triggering entity.
-                            snprintf(buf, 128, " if(getEntityMoveType(entity_index) == %d) then \n", (sub_function == TR_FD_TRIGTYPE_MONKEY)?MOVE_MONKEYSWING:MOVE_CLIMBING);
+                            Sys_snprintf(buf, 128, " if(getEntityMoveType(entity_index) == %d) then \n", (sub_function == TR_FD_TRIGTYPE_MONKEY) ? MOVE_MONKEYSWING : MOVE_CLIMBING);
                             condition = 1;  // Set additional condition.
                             break;
 
                         case TR_FD_TRIGTYPE_TIGHTROPE:
                             // Check state range for triggering entity.
-                            snprintf(buf, 128, " local state = getEntityState(entity_index) \n if((state >= %d) and (state <= %d)) then \n", TR_STATE_LARA_TIGHTROPE_IDLE, TR_STATE_LARA_TIGHTROPE_EXIT);
+                            Sys_snprintf(buf, 128, " local state = getEntityState(entity_index) \n if((state >= %d) and (state <= %d)) then \n", TR_STATE_LARA_TIGHTROPE_IDLE, TR_STATE_LARA_TIGHTROPE_EXIT);
                             condition = 1;  // Set additional condition.
                             break;
                         case TR_FD_TRIGTYPE_CRAWLDUCK:
                             // Check state range for triggering entity.
-                            snprintf(buf, 128, " local state = getEntityState(entity_index) \n if((state >= %d) and (state <= %d)) then \n", TR_ANIMATION_LARA_CROUCH_ROLL_FORWARD_BEGIN, TR_ANIMATION_LARA_CRAWL_SMASH_LEFT);
+                            Sys_snprintf(buf, 128, " local state = getEntityState(entity_index) \n if((state >= %d) and (state <= %d)) then \n", TR_ANIMATION_LARA_CROUCH_ROLL_FORWARD_BEGIN, TR_ANIMATION_LARA_CRAWL_SMASH_LEFT);
                             condition = 1;  // Set additional condition.
                             break;
                     }
@@ -930,48 +930,48 @@ int TR_Sector_TranslateFloorData(room_sector_p sector, class VT_Level *tr)
                                             if(action_type == TR_ACTIONTYPE_SWITCH)
                                             {
                                                 // Switch action type case.
-                                                snprintf(buf, 256, " local switch_state = getEntityState(%d); \n local switch_sectorstatus = getEntitySectorStatus(%d); \n local switch_mask = getEntityMask(%d); \n\n", operands, operands, operands);
+                                                Sys_snprintf(buf, 256, " local switch_state = getEntityState(%d); \n local switch_sectorstatus = getEntitySectorStatus(%d); \n local switch_mask = getEntityMask(%d); \n\n", operands, operands, operands);
                                             }
                                             else
                                             {
                                                 // Ordinary type case (e.g. heavy switch).
-                                                snprintf(buf, 256, " local switch_sectorstatus = getEntitySectorStatus(entity_index); \n local switch_mask = getEntityMask(entity_index); \n\n");
+                                                Sys_snprintf(buf, 256, " local switch_sectorstatus = getEntitySectorStatus(entity_index); \n local switch_mask = getEntityMask(entity_index); \n\n");
                                             }
                                             strcat(script, buf);
 
                                             // Trigger activation mask is here filtered through activator's own mask.
-                                            snprintf(buf, 256, " if(switch_mask == 0) then switch_mask = 0x1F end; \n switch_mask = bit32.band(switch_mask, 0x%02X); \n\n", trigger_mask);
+                                            Sys_snprintf(buf, 256, " if(switch_mask == 0) then switch_mask = 0x1F end; \n switch_mask = bit32.band(switch_mask, 0x%02X); \n\n", trigger_mask);
                                             strcat(script, buf);
                                             if(action_type == TR_ACTIONTYPE_SWITCH)
                                             {
                                                 // Switch action type case.
-                                                snprintf(buf, 256, " if((switch_state == 0) and (switch_sectorstatus == 1)) then \n   setEntitySectorStatus(%d, 0); \n   setEntityTimer(%d, %d); \n", operands, operands, timer_field);
+                                                Sys_snprintf(buf, 256, " if((switch_state == 0) and (switch_sectorstatus == 1)) then \n   setEntitySectorStatus(%d, 0); \n   setEntityTimer(%d, %d); \n", operands, operands, timer_field);
                                                 if(only_once)
                                                 {
                                                     // Just lock out activator, no anti-action needed.
-                                                    snprintf(buf2, 128, " setEntityLock(%d, 1) \n", operands);
+                                                    Sys_snprintf(buf2, 128, " setEntityLock(%d, 1) \n", operands);
                                                 }
                                                 else
                                                 {
                                                     // Create statement for antitriggering a switch.
-                                                    snprintf(buf2, 256, " elseif((switch_state == 1) and (switch_sectorstatus == 1)) then\n   setEntitySectorStatus(%d, 0); \n   setEntityTimer(%d, 0); \n", operands, operands, operands);
+                                                    Sys_snprintf(buf2, 256, " elseif((switch_state == 1) and (switch_sectorstatus == 1)) then\n   setEntitySectorStatus(%d, 0); \n   setEntityTimer(%d, 0); \n", operands, operands, operands);
                                                 }
                                             }
                                             else
                                             {
                                                 // Ordinary type case (e.g. heavy switch).
-                                                snprintf(buf, 128, "   activateEntity(%d, entity_index, switch_mask, %d, %d, %d); \n", operands, mask_mode, only_once, timer_field);
+                                                Sys_snprintf(buf, 128, "   activateEntity(%d, entity_index, switch_mask, %d, %d, %d); \n", operands, mask_mode, only_once, timer_field);
                                                 strcat(item_events, buf);
-                                                snprintf(buf, 128, " if(switch_sectorstatus == 0) then \n   setEntitySectorStatus(entity_index, 1) \n");
+                                                Sys_snprintf(buf, 128, " if(switch_sectorstatus == 0) then \n   setEntitySectorStatus(entity_index, 1) \n");
                                             }
                                             break;
 
                                         case TR_ACTIVATOR_KEY:
-                                            snprintf(buf, 256, " if((getEntityLock(%d) == 1) and (getEntitySectorStatus(%d) == 0)) then \n   setEntitySectorStatus(%d, 1); \n", operands, operands, operands);
+                                            Sys_snprintf(buf, 256, " if((getEntityLock(%d) == 1) and (getEntitySectorStatus(%d) == 0)) then \n   setEntitySectorStatus(%d, 1); \n", operands, operands, operands);
                                             break;
 
                                         case TR_ACTIVATOR_PICKUP:
-                                            snprintf(buf, 256, " if((getEntityEnability(%d) == 0) and (getEntitySectorStatus(%d) == 0)) then \n   setEntitySectorStatus(%d, 1); \n", operands, operands, operands);
+                                            Sys_snprintf(buf, 256, " if((getEntityEnability(%d) == 0) and (getEntitySectorStatus(%d) == 0)) then \n   setEntitySectorStatus(%d, 1); \n", operands, operands, operands);
                                             break;
                                     }
 
@@ -991,16 +991,16 @@ int TR_Sector_TranslateFloorData(room_sector_p sector, class VT_Level *tr)
                                         // field. This is needed for two-way switch combinations (e.g. Palace Midas).
                                         if(activator == TR_ACTIVATOR_SWITCH)
                                         {
-                                            snprintf(buf, 128, "   activateEntity(%d, entity_index, switch_mask, %d, %d, %d); \n", operands, mask_mode, only_once, timer_field);
+                                            Sys_snprintf(buf, 128, "   activateEntity(%d, entity_index, switch_mask, %d, %d, %d); \n", operands, mask_mode, only_once, timer_field);
                                             strcat(item_events, buf);
-                                            snprintf(buf, 128, "   activateEntity(%d, entity_index, switch_mask, %d, %d, 0); \n", operands, mask_mode, only_once);
+                                            Sys_snprintf(buf, 128, "   activateEntity(%d, entity_index, switch_mask, %d, %d, 0); \n", operands, mask_mode, only_once);
                                             strcat(anti_events, buf);
                                         }
                                         else
                                         {
-                                            snprintf(buf, 128, "   activateEntity(%d, entity_index, 0x%02X, %d, %d, %d); \n", operands, trigger_mask, mask_mode, only_once, timer_field);
+                                            Sys_snprintf(buf, 128, "   activateEntity(%d, entity_index, 0x%02X, %d, %d, %d); \n", operands, trigger_mask, mask_mode, only_once, timer_field);
                                             strcat(item_events, buf);
-                                            snprintf(buf, 128, "   deactivateEntity(%d, entity_index); \n", operands);
+                                            Sys_snprintf(buf, 128, "   deactivateEntity(%d, entity_index); \n", operands);
                                             strcat(anti_events, buf);
                                         }
                                     }
@@ -1017,13 +1017,13 @@ int TR_Sector_TranslateFloorData(room_sector_p sector, class VT_Level *tr)
                                     uint8_t cam_zoom  = ((*entry) & 0x1000) >> 12;
                                     cont_bit  = ((*entry) & 0x8000) >> 15;                       // 0b10000000 00000000
 
-                                    snprintf(buf, 128, "   setCamera(%d, %d, %d, %d); \n", cam_index, cam_timer, cam_once, cam_zoom);
+                                    Sys_snprintf(buf, 128, "   setCamera(%d, %d, %d, %d); \n", cam_index, cam_timer, cam_once, cam_zoom);
                                     strcat(single_events, buf);
                                 }
                                 break;
 
                             case TR_FD_TRIGFUNC_UWCURRENT:
-                                snprintf(buf, 128, "   moveToSink(entity_index, %d); \n", operands);
+                                Sys_snprintf(buf, 128, "   moveToSink(entity_index, %d); \n", operands);
                                 strcat(cont_events, buf);
                                 break;
 
@@ -1032,12 +1032,12 @@ int TR_Sector_TranslateFloorData(room_sector_p sector, class VT_Level *tr)
                                 // anti-events array.
                                 if(activator == TR_ACTIVATOR_SWITCH)
                                 {
-                                    snprintf(buf, 128, "   setFlipMap(%d, switch_mask, 1); \n   setFlipState(%d, 1); \n", operands, operands);
+                                    Sys_snprintf(buf, 128, "   setFlipMap(%d, switch_mask, 1); \n   setFlipState(%d, 1); \n", operands, operands);
                                     strcat(single_events, buf);
                                 }
                                 else
                                 {
-                                    snprintf(buf, 128, "   setFlipMap(%d, 0x%02X, 0); \n   setFlipState(%d, 1); \n", operands, trigger_mask, operands);
+                                    Sys_snprintf(buf, 128, "   setFlipMap(%d, 0x%02X, 0); \n   setFlipState(%d, 1); \n", operands, trigger_mask, operands);
                                     strcat(single_events, buf);
                                 }
                                 break;
@@ -1045,44 +1045,44 @@ int TR_Sector_TranslateFloorData(room_sector_p sector, class VT_Level *tr)
                             case TR_FD_TRIGFUNC_FLIPON:
                                 // FLIP_ON trigger acts one-way even in switch cases, i.e. if you un-pull
                                 // the switch with FLIP_ON trigger, room will remain flipped.
-                                snprintf(buf, 128, "   setFlipState(%d, 1); \n", operands);
+                                Sys_snprintf(buf, 128, "   setFlipState(%d, 1); \n", operands);
                                 strcat(single_events, buf);
                                 break;
 
                             case TR_FD_TRIGFUNC_FLIPOFF:
                                 // FLIP_OFF trigger acts one-way even in switch cases, i.e. if you un-pull
                                 // the switch with FLIP_OFF trigger, room will remain unflipped.
-                                snprintf(buf, 128, "   setFlipState(%d, 0); \n", operands);
+                                Sys_snprintf(buf, 128, "   setFlipState(%d, 0); \n", operands);
                                 strcat(single_events, buf);
                                 break;
 
                             case TR_FD_TRIGFUNC_LOOKAT:
-                                snprintf(buf, 128, "   setCamTarget(%d, %d); \n", operands, timer_field);
+                                Sys_snprintf(buf, 128, "   setCamTarget(%d, %d); \n", operands, timer_field);
                                 strcat(single_events, buf);
                                 break;
 
                             case TR_FD_TRIGFUNC_ENDLEVEL:
-                                snprintf(buf, 128, "   setLevel(%d); \n", operands);
+                                Sys_snprintf(buf, 128, "   setLevel(%d); \n", operands);
                                 strcat(single_events, buf);
                                 break;
 
                             case TR_FD_TRIGFUNC_PLAYTRACK:
-                                snprintf(buf, 128, "   playStream(%d, 0x%02X); \n", operands, (trigger_mask << 1) + only_once);
+                                Sys_snprintf(buf, 128, "   playStream(%d, 0x%02X); \n", operands, (trigger_mask << 1) + only_once);
                                 strcat(single_events, buf);
                                 break;
 
                             case TR_FD_TRIGFUNC_FLIPEFFECT:
-                                snprintf(buf, 128, "   doEffect(%d, %d); \n", operands, timer_field);
+                                Sys_snprintf(buf, 128, "   doEffect(%d, %d); \n", operands, timer_field);
                                 strcat(cont_events, buf);
                                 break;
 
                             case TR_FD_TRIGFUNC_SECRET:
-                                snprintf(buf, 128, "   findSecret(%d); \n", operands);
+                                Sys_snprintf(buf, 128, "   findSecret(%d); \n", operands);
                                 strcat(single_events, buf);
                                 break;
 
                             case TR_FD_TRIGFUNC_CLEARBODIES:
-                                snprintf(buf, 128, "   clearBodies(); \n");
+                                Sys_snprintf(buf, 128, "   clearBodies(); \n");
                                 strcat(single_events, buf);
                                 break;
 
@@ -1092,13 +1092,13 @@ int TR_Sector_TranslateFloorData(room_sector_p sector, class VT_Level *tr)
                                     uint8_t flyby_once  = ((*entry) & 0x0100) >> 8;
                                     cont_bit  = ((*entry) & 0x8000) >> 15;
 
-                                    snprintf(buf, 128, "   playFlyby(%d, %d); \n", operands, flyby_once);
+                                    Sys_snprintf(buf, 128, "   playFlyby(%d, %d); \n", operands, flyby_once);
                                     strcat(cont_events, buf);
                                 }
                                 break;
 
                             case TR_FD_TRIGFUNC_CUTSCENE:
-                                snprintf(buf, 128, "   playCutscene(%d); \n", operands);
+                                Sys_snprintf(buf, 128, "   playCutscene(%d); \n", operands);
                                 strcat(single_events, buf);
                                 break;
 
@@ -4079,9 +4079,9 @@ void Items_CheckEntities(RedBlackNode_p n)
                 if(ent->bf.animations.model->id == item->world_model_id)
                 {
                     char buf[64] = {0};
-                    snprintf(buf, 64, "if(entity_funcs[%d]==nil) then entity_funcs[%d]={} end", ent->id, ent->id);
+                    Sys_snprintf(buf, 64, "if(entity_funcs[%d]==nil) then entity_funcs[%d]={} end", ent->id, ent->id);
                     luaL_dostring(engine_lua, buf);
-                    snprintf(buf, 32, "pickup_init(%d, %d);", ent->id, item->id);
+                    Sys_snprintf(buf, 32, "pickup_init(%d, %d);", ent->id, item->id);
                     luaL_dostring(engine_lua, buf);
                     Entity_DisableCollision(ent);
                 }
