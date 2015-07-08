@@ -454,7 +454,8 @@ void glf_render_str(gl_tex_font_p glf, GLfloat x, GLfloat y, const char *text)
 
     if(glf->gl_real_tex_indexes_count == 1)
     {
-        GLfloat *p, buffer[48 * utf8_strlen(text)];
+        GLfloat *buffer =malloc(48 * utf8_strlen(text)*sizeof(GLfloat));
+        GLfloat *p;
         GLuint elements_count = 0;
         uint32_t curr_utf32, next_utf32;
         nch = utf8_to_utf32(ch, &curr_utf32);
@@ -530,6 +531,7 @@ void glf_render_str(gl_tex_font_p glf, GLfloat x, GLfloat y, const char *text)
             glColorPointer(4, GL_FLOAT, 8 * sizeof(GLfloat), buffer + 4);
             glDrawArrays(GL_TRIANGLES, 0, elements_count * 3);
         }
+        free(buffer);
     }
     else
     {
