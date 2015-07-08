@@ -64,13 +64,14 @@ SET(CMAKE_CXX_FLAGS "-std=c++0x")
 
 FIND_PACKAGE(OpenGL REQUIRED)
 
-SET(OPENAL_DIR src/al)
 SET(BULLET_DIR src/bullet)
 SET(LUA_DIR src/lua)
 SET(OGG_DIR src/ogg)
 
+SET(ALL_SOURCES)
+SET(ALL_LIBRARIES)
+
 INCLUDE_DIRECTORIES(
-    ${OPENAL_DIR}
     ${BULLET_DIR}
     ${LUA_DIR}
     ${OGG_DIR}
@@ -82,17 +83,27 @@ INCLUDE_DIRECTORIES(
     src/freetype2/include
 )
 
-FILE(GLOB OPENAL_FILES
-    ${OPENAL_DIR}/*.h
-    ${OPENAL_DIR}/*/*.h
-    ${OPENAL_DIR}/*/*/*.h
-    ${OPENAL_DIR}/*.c*
-    ${OPENAL_DIR}/*/*.c*
-    ${OPENAL_DIR}/*/*/*.c*
-    ${OPENAL_DIR}/*.inc
-    ${OPENAL_DIR}/*/*.inc
-    ${OPENAL_DIR}/*/*/*.inc
-)
+OPTION(BUNDLED_OPENAL "Use bundled OpenAL" ON)
+
+IF(BUNDLED_OPENAL)
+    SET(OPENAL_DIR "3rdparty/openal-soft")
+    FILE(GLOB OPENAL_FILES
+        ${OPENAL_DIR}/*.h
+        ${OPENAL_DIR}/*/*.h
+        ${OPENAL_DIR}/*/*/*.h
+        ${OPENAL_DIR}/*.c*
+        ${OPENAL_DIR}/*/*.c*
+        ${OPENAL_DIR}/*/*/*.c*
+        ${OPENAL_DIR}/*.inc
+        ${OPENAL_DIR}/*/*.inc
+        ${OPENAL_DIR}/*/*/*.inc
+    )
+    INCLUDE_DIRECTORIES(${OPENAL_DIR})
+ELSE()
+    FIND_PACKAGE(OpenAL REQUIRED)
+    INCLUDE_DIRECTORIES(${OPENAL_INCLUDE_DIR})
+    LIST(APPEND ALL_LIBRARIES ${OPENAL_LIBRARY})
+ENDIF()
 
 FILE(GLOB BULLET_FILES
     ${BULLET_DIR}/*.h
@@ -138,7 +149,7 @@ FILE(GLOB PRJ_SRC
 
 ADD_EXECUTABLE(
     ${PROJECT_NAME}
-    ${OPENAL_FILES}
+    ${ALL_SOURCES}
     ${BULLET_FILES}
     ${LUA_FILES}
     ${OGG_FILES}
@@ -147,6 +158,7 @@ ADD_EXECUTABLE(
 
 TARGET_LINK_LIBRARIES(
     ${PROJECT_NAME}
+    ${ALL_LIBRARIES}
     ${OPENGL_LIBRARIES}
     ${SDL2_LIBRARIES}
     ${SDL2_IMAGE_LIBRARIES}
