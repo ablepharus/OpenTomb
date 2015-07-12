@@ -7,9 +7,14 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 PROJECT(OpenTomb)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -msse3")
+IF( ${CMAKE_COMPILER_IS_GNUCC} )
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -msse3")
+ENDIF()
+IF( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -msse3")
+ENDIF()
 
-add_subdirectory(3rdparty)
+# add_subdirectory(3rdparty) there is no CMakeLists.txt in 3rdparty
 INCLUDE_DIRECTORIES(${FREETYPE_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${BULLET_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(3rdparty/LuaState/include)
@@ -88,9 +93,19 @@ IF(MINGW)
     ENDIF()
 ELSE()
     INCLUDE(FindPkgConfig)
-    PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
-    PKG_SEARCH_MODULE(SDL2_IMAGE REQUIRED SDL2_image)
-
+    IF(${PKG_CONFIG_FOUND})
+        PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
+        PKG_SEARCH_MODULE(SDL2_IMAGE REQUIRED SDL2_image)
+    ELSE()
+        SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+        FIND_PACKAGE(SDL2 REQUIRED)
+        FIND_PACKAGE(SDL2IMAGE REQUIRED)
+        
+        SET(SDL2_INCLUDE_DIRS ${SDL2_INCLUDE_DIR})
+        # This is a workaround. SDL headers are included in two ways: mentioning the SDL 
+        # directory (which is uncommon) and directly (SDL/SDL.h vs SDL.h)
+        SET(SDL2_IMAGE_INCLUDE_DIRS "${SDL2IMAGE_INCLUDE_DIR};${SDL2_INCLUDE_DIR}/SDL2")
+    ENDIF()
     # disable glext prototypes
     ADD_DEFINITIONS("-DGL_GLEXT_PROTOTYPES")
 ENDIF()
